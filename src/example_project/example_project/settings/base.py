@@ -79,6 +79,8 @@ INSTALLED_APPS = (
 
     # Local applications
     'website',
+    'airfields',
+    'airplanes',
 )
 
 #==============================================================================

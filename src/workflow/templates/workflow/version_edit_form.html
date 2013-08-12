@@ -1,0 +1,40 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_static workflow_admin_modify %}{% load url from future %}
+
+{% block extrahead %}{{ block.super }}
+{% if can_be_branched %}
+<script type="text/javascript" src="{% static "workflow/js/workflow.js" %}"></script>
+<script type="text/javascript">
+    django.jQuery(function () {
+        init_moderator_comment("{{moderator_old_comment}}");
+    });
+</script>
+{% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+        <a href="{% url 'admin:app_list' app_label %}">{{app_label|capfirst|escape}}</a> &rsaquo;
+        <a href="{{changelist_url}}">{{opts.verbose_name_plural|capfirst}}</a> &rsaquo;
+        {% if not is_recovering %}
+        <a href="{{change_url}}">{{original|truncatewords:"18"}}</a> &rsaquo;
+        <a href="{{history_url}}">{% trans 'History' %}</a> &rsaquo;
+        {% endif %}
+        {{title}}
+    </div>
+{% endblock %}
+
+{% block object-tools %}
+{% if not is_recovering %}
+	<ul class="object-tools">
+        {% if parent_url %}
+        <li><a href="{{ parent_url }}">{% trans "Previous version" %}</a></li>
+        {% endif %}
+        <li><a href="{{ changes_url }}">{% trans "View changes" %}</a></li>
+	</ul>
+{% endif %}
+{% endblock %}
+
+{% block submit_buttons_top %}{% workflow_model_submit_row %}{% endblock %}
+{% block submit_buttons_bottom %}{% workflow_model_submit_row %}{% endblock %}

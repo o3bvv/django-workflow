@@ -1,0 +1,101 @@
+{% extends "admin/object_history.html" %}
+{% load admin_static i18n %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static "workflow/css/workflow_admin.css" %}" />
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "workflow/js/workflow.js" %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+    	<p>{% blocktrans %}Choose a date from the list below to revert to a previous revision of this object.{% endblocktrans %}</p>
+    	<div class="module">
+            {% if action_list %}
+                <table id="change-history">
+                    <thead>
+                        <tr>
+                            <th scope="col">{% trans 'Status' %}</th>
+                            <th scope="col">{% trans 'Actions' %}</th>
+                            <th scope="col">{% trans 'Changed by' %}</th>
+                            <th scope="col">{% trans 'Change date' %}</th>
+                            <th scope="col">{% trans 'Moderated by' %}</th>
+                            <th scope="col">{% trans 'Moderation date' %}</th>
+                            <th scope="col">{% trans 'Comment' %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for action in action_list %}
+                            <tr id="revision_{{action.revision.id}}" class="object_version_row">
+                                {% if action.revision.parent %}
+                                <input type="hidden" class="parent_id" value="revision_{{action.revision.parent.id}}"/>
+                                {% endif %}
+                                {% for child_pk in action.children_pks %}
+                                    <input type="hidden" class="child_id" value="revision_{{child_pk}}"/>
+                                {% endfor %}
+                                <td>
+                                    {% if action.revision.deleted %}
+                                    <img src="{{ STATIC_URL }}workflow/img/deleted.gif"
+                                    title="{% trans 'Object deleted!' %}"/>
+                                    {% else %}
+                                    <img src="{{ STATIC_URL }}workflow/img/status_{{ action.revision.status.lower }}.gif"
+                                    title="{{action.revision.get_status_display}}"/>
+                                    {% endif %}
+                                    {% if action.is_current %}
+                                    <img src="{{ STATIC_URL }}workflow/img/star.png" title="{% trans 'This version is current' %}"/>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not action.revision.deleted %}
+                                    <a href="{{action.edit_url}}">
+                                        <img src="{{ STATIC_URL }}workflow/img/action_edit.gif"
+                                        title="{% trans 'Edit object' %}"/>
+                                    </a>
+                                    <a href="{{action.view_url}}">
+                                        <img src="{{ STATIC_URL }}workflow/img/action_view.gif"
+                                        title="{% trans 'View changes' %}"/>
+                                    </a>
+                                    {% if action.pending and is_admin %}
+                                    <a href="{{action.approve_url}}" class="approve-link">
+                                        <img src="{{ STATIC_URL }}workflow/img/status_ap.gif" title="Подтвердить"/>
+                                    </a>
+                                    <a href="{{action.reject_url}}" class="reject-link">
+                                        <img src="{{ STATIC_URL }}workflow/img/status_rj.gif" title="Отклонить"/>
+                                    </a>
+                                    {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if action.revision.created_by %}
+                                        {{action.revision.created_by.username}}
+                                        {% if action.revision.created_by.first_name %}
+                                        	({{action.revision.created_by.first_name}} {{action.revision.created_by.last_name}})
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>{{action.revision.date_created}}</td>
+                                <td>
+                                    {% if action.revision.moderated_by %}
+                                        {{action.revision.moderated_by.username}}
+                                        {% if action.revision.moderated_by.first_name %}
+                                        	({{action.revision.moderated_by.first_name}} {{action.revision.moderated_by.last_name}})
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>{{action.revision.date_moderated|default:""}}</td>
+                                <td>{{action.revision.comment|linebreaksbr|default:""}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>{% trans "This object doesn't have a change history. It probably wasn't added via this admin site." %}</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -7,7 +7,7 @@
 django==1.5.1
 django-admin-tools==0.5.1
 django-extensions==1.1.1
-django-workflow==1.0.0
+django-workflow==0.0.9
 
 fabric==1.7.0
 uwsgi==1.2.6

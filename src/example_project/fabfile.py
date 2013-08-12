@@ -4,7 +4,7 @@ import posixpath
 import re
 
 env.project_name = 'example_project'
-env.repository = 'git@github.com:lincolnloop/example_project.git'
+# env.repository = 'git@github.com:lincolnloop/example_project.git'
 env.local_branch = 'master'
 env.remote_ref = 'origin/master'
 env.requirements_file = 'requirements.pip'
@@ -207,6 +207,14 @@ def requirements():
         if match:
             with cd('lib/python{0}/site-packages'.format(match.group())):
                 fix_permissions()
+
+@task
+@roles('web', 'db')
+def init_workflow():
+    """
+    Initializes objects for workflow application.
+    """
+    dj("init_workflow")
 
 
 #==============================================================================

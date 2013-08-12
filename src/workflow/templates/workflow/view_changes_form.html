@@ -1,0 +1,52 @@
+{% extends "admin/change_form.html" %}
+{% load i18n workflow_admin_modify %}{% load url from future %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+        <a href="{% url 'admin:app_list' app_label %}">{{app_label|capfirst|escape}}</a> &rsaquo;
+        <a href="{{changelist_url}}">{{opts.verbose_name_plural|capfirst}}</a> &rsaquo;
+        <a href="{{change_url}}">{{original|truncatewords:"18"}}</a> &rsaquo;
+        <a href="{{history_url}}">{% trans 'History' %}</a> &rsaquo;
+        {{title}}
+    </div>
+{% endblock %}
+
+{% block content %}
+	{% block object-tools %}
+		<ul class="object-tools">
+			<li><a href="{{ edit_url }}" class="historylink">{% trans 'Change version' %}</a></li>
+		</ul>
+	{% endblock %}
+	<form enctype="multipart/form-data" action="" method="post" id="moderatedobject_form">
+		{% csrf_token %}
+		<div>
+		{% if changes %}
+		<!--
+			{% if save_on_top and has_content_admin_permission %}
+				{% block submit_buttons_top %}{% workflow_model_submit_row %}{% endblock %}
+			{% endif %}
+		-->
+			<fieldset class="module aligned ">
+			{% for change in changes %}
+				<div class="form-row {{ change.verbose_name }}">
+					<div>
+						<label style="font-size: 14px; font-weight: bold;">
+							{{ change.verbose_name }}
+						</label>
+						<p style="width:800px;">{{ change.diff|safe }}</p>
+					</div>
+				</div>
+			{% endfor %}
+			</fieldset>
+		<!--
+			{% if has_content_admin_permission %}
+				{% block submit_buttons_bottom %}{% workflow_model_submit_row %}{% endblock %}
+			{% endif %}
+		-->
+		{% else %}
+			{% trans 'This version has no changes' %}
+		{% endif %}
+		</div>
+	</form>
+{% endblock %}

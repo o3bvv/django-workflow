@@ -15,18 +15,45 @@ class ExampleIndexDashboard(Dashboard):
     Custom index dashboard for project.
     """
     def init_with_context(self, context):
+
+        #=======================================================================
+        # Local applications
+        #=======================================================================
+
+        self.children.append(modules.ModelList(
+            _("Airplanes"),
+            draggable=True,
+            deletable=False,
+            collapsible=True,
+            models=(
+                'airplanes.models.*',
+            )
+        ))
+
+        #=======================================================================
+        # Configuration
+        #=======================================================================
+
+        config_models = (
+            'django.contrib.auth.models.Group',
+            'django.contrib.auth.models.User',
+        )
+
+        if settings.WORKFLOW_ENABLE:
+            config_models = config_models + ('workflow.models.Version',)
+
         self.children.append(modules.ModelList(
             _("Configuration"),
             draggable=True,
             deletable=False,
             collapsible=True,
-            models=(
-                'django.contrib.auth.models.Group',
-                'django.contrib.auth.models.User',
-            ),
+            models=config_models,
         ))
 
-        # append a recent actions module
+        #=======================================================================
+        # Recent actions
+        #=======================================================================
+
         self.children.append(modules.RecentActions(
             _('Recent Actions'),
             limit=10,

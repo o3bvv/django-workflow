@@ -1,0 +1,75 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static admin_list %}
+{% load url from future %}
+{% load admin_urls %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; {{ title|capfirst }}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "workflow/js/workflow.js" %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+    	{% if action_list %}
+    		<div class="module">
+    			<table id="objects_to_moderate" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th scope="col">{% trans 'Object' %}</th>
+                            <th scope="col">{% trans 'Actions' %}</th>
+                            <th scope="col">{% trans 'Changed by' %}</th>
+                            <th scope="col">{% trans 'Change date' %}</th>
+                            <th scope="col">{% trans 'Comment' %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for action in action_list %}
+                            <tr>
+                                <td>{{action.version}}</td>
+                            	<td>
+                                    <a href="{{action.edit_url}}">
+                                        <img src="{{ STATIC_URL }}workflow/img/action_edit.gif"
+                                        title="{% trans 'Edit object' %}"/>
+                                    </a>
+                                    <a href="{{action.view_url}}">
+                                        <img src="{{ STATIC_URL }}workflow/img/action_view.gif"
+                                        title="{% trans 'View changes' %}"/>
+                                    </a>
+                                    <a href="{{action.approve_url}}" class="approve-link">
+                                        <img src="{{ STATIC_URL }}workflow/img/status_ap.gif" title="Approve"/>
+                                    </a>
+                                    <a href="{{action.reject_url}}" class="reject-link">
+                                        <img src="{{ STATIC_URL }}workflow/img/status_rj.gif" title="Reject"/>
+                                    </a>
+                                </td>
+                            	<td>
+                                    {% if action.version.revision.created_by %}
+                                        {{action.version.revision.created_by.username}}
+                                        {% if action.version.revision.created_by.first_name %}
+                                        	({{action.version.revision.created_by.first_name}}
+                                             {{action.version.revision.created_by.last_name}})
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            	<td>{{action.version.revision.date_created}}</td>
+                            	<td>{{action.version.revision.comment|linebreaksbr|default:""}}</td>
+                            </tr>
+                        {% endfor %}
+                </table>
+        	</div>
+        {% else %}
+        	<p>{% trans "There are no objects waiting for changes approvement." %}</p>
+        {% endif %}
+    </div>
+{% endblock %}

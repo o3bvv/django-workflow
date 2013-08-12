@@ -1,0 +1,47 @@
+{% extends "admin/base_site.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &rsaquo;
+        <a href="{% url 'admin:app_list' app_label %}">{{app_label|capfirst|escape}}</a> &rsaquo;
+        <a href="{{changelist_url}}">{{opts.verbose_name_plural|capfirst}}</a> &rsaquo;
+        {{title}}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+    	{% if deleted %}
+        <p>{% blocktrans %}Select an object for recovering from the list below.{% endblocktrans %}</p>
+        <div class="module">
+                <table id="change-history">
+                    <thead>
+                    <tr>
+                        <th scope="col">{% trans 'Actions' %}</th>
+                        <th scope="col">{{opts.verbose_name|capfirst}}</th>
+                        <th scope="col">{% trans 'Date/time' %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for deletion in deleted %}
+                            <tr>
+                                <td>
+                                    <a href="{{deletion.pk}}">
+                                        <img src="{{ STATIC_URL }}workflow/img/recover.png"
+                                        title="{% trans 'Recover deleted object' %}"/>
+                                    </a>
+                                </td>
+                                <td>{{deletion.object_repr}}</td>
+                                <td>{{deletion.revision.date_created}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        </div>
+        {% else %}
+            <p>{% trans 'There are no deleted objects.' %}</p>
+		{% endif %}
+    </div>
+{% endblock %}

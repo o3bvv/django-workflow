@@ -1,0 +1,16 @@
+{% extends "admin/change_form.html" %}
+{% load admin_static workflow_admin_modify %}
+
+{% block extrahead %}{{ block.super }}
+{% if can_be_branched %}
+<script type="text/javascript" src="{% static "workflow/js/workflow.js" %}"></script>
+<script type="text/javascript">
+    django.jQuery(function () {
+        init_moderator_comment();
+    });
+</script>
+{% endif %}
+{% endblock %}
+
+{% block submit_buttons_top %}{% workflow_model_submit_row %}{% endblock %}
+{% block submit_buttons_bottom %}{% workflow_model_submit_row %}{% endblock %}
