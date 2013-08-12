@@ -1,0 +1,5 @@
+*.pyc
+*.egg-info
+example_project/settings/local.py
+example_project/settings/local/*
+docs/_build
