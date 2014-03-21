@@ -1,7 +1,7 @@
 django-workflow
 ===============
 
-Python Django application, which provides model auditing and history via admin paanel.
+Python Django application, which provides model auditing and history via admin panel.
 
 Combines [django-moderation](https://github.com/dominno/django-moderation) and [django-reversion](https://github.com/etianen/django-reversion) and supports history branching.
 
